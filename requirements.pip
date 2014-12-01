@@ -1,0 +1,13 @@
+# requirements.pip
+# ================
+#
+# This file contains the runtime requirements for the project.
+#
+# NOTE:  If a dependency needs to be available on the deployed server, it
+# should be listed here.  If it is only a dev/build-time dependency (e.g. unit
+# test tool, documentation builder, etc...), it should be listed in
+# devreqs.pip. Keep in mind that when we pull polaris libraries from git,
+# they always retrieve the current version.
+
+Flask==0.9
+iso8601==0.1.10

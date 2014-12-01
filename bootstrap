@@ -1,0 +1,93 @@
+#!/bin/bash 
+# bootstrap
+# =========
+#
+# Usage:  bootstrap [environment_name]
+#
+# Creates a new virtualenv named environment_name, and installs all the
+# runtime and devtime dependencies.
+#
+# If environment_name is not specified, it defaults to the directory name
+#
+
+die() {
+    echo "$*"
+    exit 1
+}
+
+NAME=$(basename $(cd $(dirname $0); /bin/pwd))
+VENV=virtualenv
+VENV_VERSION=1.11.6
+VENV_SYS_VERSION=`virtualenv --version`
+VENV_PY_URL=https://pypi.python.org/packages/source/v/virtualenv/virtualenv-${VENV_VERSION}.tar.gz
+
+#Load configs
+. bootstrap.cfg
+
+#override w/ parameters
+if [ -n "$1" ]; then
+  NAME=$1
+fi
+
+#begin processing
+
+here=$(cd $(dirname $0); /bin/pwd)
+venv_name=${1-$NAME}
+venv_dir=${VIRTUAL_ENV-$here/.venv-$venv_name}
+bin_dir=$venv_dir/bin
+activate=$bin_dir/activate
+pip="$bin_dir/pip install --allow-all-external -r"
+
+if [ -f "$activate" ]
+then
+    venv_name=$(basename $venv_dir)
+    venv_name=${venv_name#.venv-}
+else
+    venv_args="--no-site-packages --distribute --prompt=($venv_name) $venv_dir"
+
+    #Also make sure proper version of virtualenv is available
+    if [ -n "`which $VENV`" -a "$VENV_SYS_VERSION" = "$VENV_VERSION" ]
+    then
+        $VENV $venv_args || die "Could not create virtualenv"
+    else
+        echo "Retrieving virtualenv"
+        curl -Os $VENV_PY_URL || die "Could not download virtualenv"
+        tar -xzf virtualenv-${VENV_VERSION}.tar.gz || die "Failed to extract virtualenv"
+
+        python virtualenv-${VENV_VERSION}/virtualenv.py $venv_args || die "Could not create virtualenv"
+        VENV_VERSION_NEEDS_PATCHING=1.11.6
+        VENV_MATCH_TEXT="DEFAULT_RETRIES = 0"
+        VENV_MATCH_LINE=32
+        VENV_MATCH_FILE="${venv_dir}/lib/python2.7/site-packages/pip/_vendor/requests/adapters.py"
+
+        if [ "${VENV_VERSION}" == "${VENV_VERSION_NEEDS_PATCHING}" ] && [ `awk "/${VENV_MATCH_TEXT}/ {print FNR}" ${VENV_MATCH_FILE}` == "${VENV_MATCH_LINE}" ]; then
+          echo "Stupidly patching..."
+          sed -i "${VENV_MATCH_LINE}s/${VENV_MATCH_TEXT}/DEFAULT_RETRIES = 10/" ${VENV_MATCH_FILE}
+        else
+          echo "***************************************************************"
+          echo "* VENV HAS BEEN UPDATED!  Review boostrap to remove retry hack*"
+          echo "***************************************************************"
+        fi
+        echo "Removing virtualenv"
+        rm -rf virtualenv-${VENV_VERSION} virtualenv-${VENV_VERSION}.tar.gz
+    fi
+fi
+
+$pip requirements.pip || die "Could not install main dependencies. See ~/.pip/pip.log"
+[ "x$RUNTIME_ONLY" = "x" -a -f "$here/devreqs.pip" ] && { $pip $here/devreqs.pip || die "Could not install dev dependencies"; }
+
+local_link=activate-$venv_name
+ln -nsf $activate $here/$local_link
+
+echo
+echo ==================================================
+echo
+echo Dependencies installed to:  $venv_dir
+echo Activate the virtualenv by running:
+echo "    source $local_link"
+echo
+echo To deactivate, run
+echo "    deactivate"
+echo
+echo Read the README for instructions on configuration
+
