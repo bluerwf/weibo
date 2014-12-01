@@ -4,9 +4,10 @@ from hashlib import md5
 from weibo_exception import InvalidUser, Invaliduuid
 from db import AccountDB, UserAlreadyExists, DuplicateUserException
 from utility import convert_str_to_list
+from app import app
 
-DB = "/Users/lafengnan/codes/Github/weibo/weibo.db"
-acc = AccountDB(DB)
+DB = "/var/weibo/weibo.db"
+acc = AccountDB(app.config.get('DB', DB))
 
 def AuthToken(f):
     def wrapper(uuid, *args, **kargs):

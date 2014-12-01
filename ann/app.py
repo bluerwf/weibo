@@ -4,13 +4,14 @@
 from flask import Flask, Response, request
 import json
 import account_handlers
+from wsgi import Weibo
 
-app = Flask(__name__)
+app = Weibo(__name__)
 
 @app.route('/hello', methods=['GET'])
 def hello():
-    return {'hello': 'world'}
-    #return _hello()
+    #return {'hello': 'world'}
+    return _hello()
 
 @app.route('/hello/<id>', methods=['GET'])
 def hello_id(id):
