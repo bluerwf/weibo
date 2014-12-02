@@ -1,8 +1,12 @@
 #! /usr/bin/env python
 
 import os
+import sys
 os.path.sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from ann import db
+from ann.account_handlers import acc
 
-tb = db.AccountDB('/Users/lafengnan/codes/Github/weibo/weibo.db') 
-tb.create_table()
+main = acc.create_table
+
+if __name__ == '__main__':
+    sys.exit(main())
+
