@@ -34,7 +34,7 @@ class Account:
         """
         return md5(self.name).hexdigest()
 
-    def login(self):
+    def signin(self):
         """
         SELECT username, decrypted(passwd) as passwd From
         account WHERE username = '%s' % self.username
