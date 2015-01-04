@@ -21,9 +21,13 @@ def hello_id(id):
 #def get_files():
 #    return  _get_files()
 
-@app.route('/weibo/signup', methods=['PUT'])
+@app.route('/weibo/signup', methods=['POST'])
 def signup():
     return account_handlers.signup()
+
+@app.route('/weibo/signin',methods=['POST'])
+def signin():
+    return account_handlers.signin()
 
 @app.route('/ping', methods=['PUT'])
 def ping():

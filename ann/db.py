@@ -1,6 +1,13 @@
 import sqlite3
 import uuid
 
+class UserAlreadyExists(Exception):
+    def __init__(self, user):
+        self.user = user
+
+    def __str__(self):
+        return "User: {user} already exists!".format(user=self.user)
+
 def debug(f):
     def wrapper(*args, **kargs):
         print args, kargs
@@ -8,8 +15,10 @@ def debug(f):
     return wrapper
 
 class Database:
+    @debug
     def __init__(self, db_path):
         self.conn = sqlite3.connect(db_path)
+        self.conn.row_factory = sqlite3.Row
         self.c = self.conn.cursor()
 
     @debug
@@ -72,7 +81,7 @@ class AccountDB(Database):
             uid = str(uuid.uuid4()) 
             self.write_db(sql, (uid, username, pw))
         else:
-            pass
+            raise UserAlreadyExists(username) 
 
     def get_user(self, user):
         query = '''
