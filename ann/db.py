@@ -1,6 +1,5 @@
 import sqlite3
 import uuid
-
 class UserAlreadyExists(Exception):
     def __init__(self, user):
         self.user = user
@@ -60,11 +59,12 @@ class AccountDB(Database):
         CREATE TABLE account (
         uuid TEXT PRIMARY KEY,
         name VARCHAR(20),
-        passwd TEXT
+        passwd TEXT,
+        follower  TEXT,
+        following   TEXT
         )
         '''
-        if not self.is_table_existing('account'):
-            self.write_db(sql)
+        self.write_db(sql)
         
     def is_user_existing(self, user):
         query = '''
@@ -76,10 +76,10 @@ class AccountDB(Database):
     def add_user(self, username, pw):
         if not self.is_user_existing(username):
             sql = '''
-            INSERT INTO account VALUES (?,?,?)
+            INSERT INTO account VALUES (?,?,?,?,?)
             '''
             uid = str(uuid.uuid4()) 
-            self.write_db(sql, (uid, username, pw))
+            self.write_db(sql, (uid, username, pw, None, None))
         else:
             raise UserAlreadyExists(username) 
 
@@ -88,3 +88,23 @@ class AccountDB(Database):
         SELECT * FROM account WHERE name = ?
         '''
         return self.read_db(query, (user, ))
+    def add_follower(self, user, follower):
+        if user == follower:
+            raise Exception("Can't follow self")
+        if self.get_user(follower):
+            q = '''
+            SELECT follower FROM account WHERE name = ?
+            '''
+            followers = self.read_db(q, (user, ))
+            follower = followers[0]['follower'] + ", " + follower
+
+            sql = '''
+            UPDATE account SET follower = ? WHERE name = ?
+            '''
+            self.write_db(sql, (follower, user))
+            query = '''
+            SELECT name, follower, following FROM account WHERE name = ?
+            '''
+            return self.read_db(query, (user, ))
+        else:
+            raise Exception("Invalid user: {}".format(follower))
