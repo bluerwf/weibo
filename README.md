@@ -5,11 +5,11 @@ weibo is a twitter-like simple weibo demo system. It supports the miminum functi
 
 ## Architecture
 
-* Framework:  
+* Framework  
 [Flask](http://dormousehole.readthedocs.org/en/latest/)
-* Database:  
+* Database   
 [sqlite3](http://www.sqlite.org/)
-* DB API for Sqlite3:  
+* DB API for Sqlite3    
 [Python sqlite3 module](https://docs.python.org/2/library/sqlite3.html)
 
 ## Setup
@@ -181,11 +181,3 @@ Contenty-Type        | application/json     | Required         |
     "following": following list of user
 }
 ```
-
-
-
-
-
-
-
-
