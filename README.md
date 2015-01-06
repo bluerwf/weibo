@@ -139,9 +139,10 @@ Contenty-Type        | application/json     | Required         |
 
 * URI  
 
-URI           | Method | Parameters|
---------------| ------ | -----------
-/weibo/follower | POST   | None      |
+
+URI                      | Method | Parameters|
+-------------------------| ------ | -----------
+/weibo/\<uuid\>/follower | POST   | None      |
 
 * Headers  
 
@@ -153,7 +154,6 @@ Content-Type        | application/json     | Required         |
 
 ```
 {
-    "user": the user to add follower,
     "follower": the follower name to be added
 }
 ```
