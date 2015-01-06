@@ -23,7 +23,7 @@ This code has passed test on OS X with Python 2.7.6. Consequently it should conf
 4. Clone source code to local system.
 
 ### Run
-1. Execute bin/init_db.py to initialize data base.
+1. Execute bin/init\_db.py to initialize data base.
 2. python ann/app.py to run flask embedded web server.
 3. Send request with curl or other http clients.
 
@@ -33,7 +33,7 @@ This code has passed test on OS X with Python 2.7.6. Consequently it should conf
 
 ### curl usage
 
-curl -X [Method] -H "header: value" http://127.0.0.1:5000/weibo/uri  -d '{json object}' -vv
+curl -X \[Method\] -H "header: value" http://127.0.0.1:5000/weibo/uri  -d '{json object}' -vv
 
 **Example**  
 curl -X POST -H "X-User: test" -H "X-pass: test123" http://127.0.0.1:5000/weibo/signup -vv  
