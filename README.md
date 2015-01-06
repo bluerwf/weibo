@@ -1,7 +1,7 @@
 weibo
 =====
 
-weibo is a twitter-like simple weibo demo system. It supports the miminum functionalities of a twitter-like clone.  
+weibo is a simple twitter-like demo system. It supports the miminum functionalities of a twitter-like clone.  
 
 ## Architecture
 
@@ -63,7 +63,7 @@ Name          | Value    | Required/Optioanl|
 X-User        | name     | Required         |  
 X-Pass        | password | Required         |
 
-* body  
+* Body  
 None(*Will Change*)
 
 #### Response
@@ -148,9 +148,10 @@ URI                      | Method | Parameters|
 
 Name                | Value                | Required/Optioanl|
 --------------------|----------------------| ------------------
-Content-Type        | application/json     | Required         |    
+Content-Type        | application/json     | Required         |  
+X-Auth-Token        | token                | Required         |   
 
-* body  
+* Body  
 
 ```
 {
@@ -181,3 +182,38 @@ Contenty-Type        | application/json     | Required         |
     "following": following list of user
 }
 ```
+###  remove a follower
+
+#### Request
+
+* URI  
+
+URI                               | Method   | Parameters|
+----------------------------------| -------- | -----------
+/weibo/\<uuid\>/follower/\<name\> | DELETE   | None      |
+
+* Headers  
+
+Name                | Value                | Required/Optioanl|
+--------------------|----------------------| ------------------ 
+X-Auth-Token        | token                | Required         |
+   
+
+* Body  
+None
+
+#### Response
+
+* status  
+  * 204 OK: Request is handled successfully
+  * 400 Bad Request: Request does not conform with restrictions
+  * 403 Forbidden: Authentication failed
+  
+* Headers  
+
+Name                 | Value                | Required/Optioanl|
+---------------------|----------------------| ------------------
+Contenty-Type        | application/json     | Required         |  
+
+* Body  
+None
