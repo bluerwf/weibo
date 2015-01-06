@@ -29,9 +29,9 @@ def signup():
 def signin():
     return account_handlers.signin()
 
-@app.route('/weibo/follower',methods=['POST'])
-def add_follower():
-    return account_handlers.add_follower()
+@app.route('/weibo/<uuid>/follower',methods=['POST'])
+def add_follower(uuid):
+    return account_handlers.add_follower(uuid)
 
 @app.route('/ping', methods=['PUT'])
 def ping():

@@ -1,8 +1,8 @@
 import json
 from flask import request, Response
 from hashlib import md5
-
-from db import AccountDB, UserAlreadyExists
+from weibo_exception import InvalidUser
+from db import AccountDB, UserAlreadyExists, DuplicateUserException
 
 DB = "/Users/lafengnan/codes/Github/weibo/weibo.db"
 acc = AccountDB(DB)
@@ -50,17 +50,27 @@ def signin():
         return Response(json.dumps({'error':'invalid user_name'}),
                        status = 404, content_type='application/json')
 
-def add_follower():
+def add_follower(uuid):
     data = json.loads(request.data)
+    print data
     try:
-        r = acc.add_follower(data['user'], data['follower'])
-        body = {'name': r[0]['name'],
+        r = acc.add_follower(uuid,data['follower'])
+        print r
+        body = {'uuid':r[0]['uuid'],
+                'name': r[0]['name'],
                 'follower': r[0]['follower'].split(", "),
                 'following': r[0]['following']
                }
+        print body
         return Response(json.dumps(body), status = 200, content_type ='application/json')
-    except Exception as e:
+    except InvalidUser as e:
         print str(e)
         return Response(json.dumps({'error': str(e)}),
                        status=404,
                        content_type="application/json")
+    except DuplicateUserException as e:
+        print str(e)
+        return Response(json.dumps({'error': str(e)}),
+                       status=403,
+                       content_type="application/json")
+

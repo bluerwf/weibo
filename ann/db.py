@@ -1,11 +1,7 @@
 import sqlite3
 import uuid
-class UserAlreadyExists(Exception):
-    def __init__(self, user):
-        self.user = user
+from weibo_exception import InvalidUser, UserAlreadyExists, DuplicateUserException
 
-    def __str__(self):
-        return "User: {user} already exists!".format(user=self.user)
 
 def debug(f):
     def wrapper(*args, **kargs):
@@ -73,6 +69,13 @@ class AccountDB(Database):
         r = self.read_db(query, (user, ))
         return True if r else False
 
+    def is_follower_existing(self, uuid, follower):
+        query = '''
+        SELECT follower FROM account WHERE uuid = ?
+        '''
+        r = self.read_db(query, (uuid, ))[0]['follower'].split(', ')
+        return True if follower in r else False
+
     def add_user(self, username, pw):
         if not self.is_user_existing(username):
             sql = '''
@@ -88,23 +91,31 @@ class AccountDB(Database):
         SELECT * FROM account WHERE name = ?
         '''
         return self.read_db(query, (user, ))
-    def add_follower(self, user, follower):
-        if user == follower:
-            raise Exception("Can't follow self")
+
+    def get_user_by_uuid(self, uuid):
+        query = '''
+        SELECT name FROM account WHERE uuid = ?
+        '''
+        return self.read_db(query, (uuid,))
+    
+    def add_follower(self, uuid, follower):
+        if self.get_user_by_uuid(uuid)[0]['name'] == follower or\
+        self.is_follower_existing(uuid, follower):
+            raise DuplicateUserException(follower)
         if self.get_user(follower):
             q = '''
-            SELECT follower FROM account WHERE name = ?
+            SELECT follower FROM account WHERE uuid = ?
             '''
-            followers = self.read_db(q, (user, ))
+            followers = self.read_db(q, (uuid, ))
             follower = followers[0]['follower'] + ", " + follower
 
             sql = '''
-            UPDATE account SET follower = ? WHERE name = ?
+            UPDATE account SET follower = ? WHERE uuid = ?
             '''
-            self.write_db(sql, (follower, user))
+            self.write_db(sql, (follower, uuid))
             query = '''
-            SELECT name, follower, following FROM account WHERE name = ?
+            SELECT uuid, name, follower, following FROM account WHERE uuid = ?
             '''
-            return self.read_db(query, (user, ))
+            return self.read_db(query, (uuid, ))
         else:
-            raise Exception("Invalid user: {}".format(follower))
+            raise InvalidUser(follower)
