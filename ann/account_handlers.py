@@ -52,10 +52,8 @@ def signin():
 
 def add_follower(uuid):
     data = json.loads(request.data)
-    print data
     try:
-        r = acc.add_follower(uuid,data['follower'])
-        print r
+        r = acc.add_follower(uuid, data['follower'])
         body = {'uuid':r[0]['uuid'],
                 'name': r[0]['name'],
                 'follower': r[0]['follower'].split(", "),

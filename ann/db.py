@@ -74,7 +74,7 @@ class AccountDB(Database):
         SELECT follower FROM account WHERE uuid = ?
         '''
         r = self.read_db(query, (uuid, ))
-        if r and follower in r[0]['follower'].split(", "):
+        if r[0]['follower'] and follower in r[0]['follower'].split(", "):
             return True
         else:
             return False
@@ -102,15 +102,14 @@ class AccountDB(Database):
         return self.read_db(query, (uuid,))
     
     def add_follower(self, uuid, follower):
-        if self.get_user_by_uuid(uuid)[0]['name'] == follower or\
-        self.is_follower_existing(uuid, follower):
+        if self.get_user_by_uuid(uuid)[0]['name'] == follower or self.is_follower_existing(uuid, follower):
             raise DuplicateUserException(follower)
         if self.get_user(follower):
             q = '''
             SELECT follower FROM account WHERE uuid = ?
             '''
             followers = self.read_db(q, (uuid, ))
-            if followers:
+            if followers[0]['follower']:
                 follower = followers[0]['follower'] + ", " + follower
             sql = '''
             UPDATE account SET follower = ? WHERE uuid = ?
