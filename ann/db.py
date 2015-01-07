@@ -5,7 +5,7 @@ from weibo_exception import InvalidUser, UserAlreadyExists, DuplicateUserExcepti
 
 def debug(f):
     def wrapper(*args, **kargs):
-        print args, kargs
+        print f.__name__, args, kargs
         return f(*args, **kargs)
     return wrapper
 
@@ -73,8 +73,11 @@ class AccountDB(Database):
         query = '''
         SELECT follower FROM account WHERE uuid = ?
         '''
-        r = self.read_db(query, (uuid, ))[0]['follower'].split(', ')
-        return True if follower in r else False
+        r = self.read_db(query, (uuid, ))
+        if r and follower in r[0]['follower'].split(", "):
+            return True
+        else:
+            return False
 
     def add_user(self, username, pw):
         if not self.is_user_existing(username):
@@ -107,8 +110,8 @@ class AccountDB(Database):
             SELECT follower FROM account WHERE uuid = ?
             '''
             followers = self.read_db(q, (uuid, ))
-            follower = followers[0]['follower'] + ", " + follower
-
+            if followers:
+                follower = followers[0]['follower'] + ", " + follower
             sql = '''
             UPDATE account SET follower = ? WHERE uuid = ?
             '''
@@ -117,5 +120,23 @@ class AccountDB(Database):
             SELECT uuid, name, follower, following FROM account WHERE uuid = ?
             '''
             return self.read_db(query, (uuid, ))
+        else:
+            raise InvalidUser(follower)
+     
+    def delete_follower(self, uuid, follower):
+        if self.get_user(follower):
+            q = '''
+            SELECT follower FROM account WHERE uuid = ?
+            '''
+            followers = self.read_db(q,(uuid,))[0]['follower']
+            if followers:
+                follower = followers.split(', ').remove(follower)
+                sql = '''
+                UPDATE account SET follower=? WHERE uuid = ?
+                '''
+                new_follower = follower[0]
+                for i in follower[1:]:
+                    new_follower = new_follower + ', ' + i
+                self.write_db(sql, (followers, uuid))
         else:
             raise InvalidUser(follower)

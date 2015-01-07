@@ -33,6 +33,10 @@ def signin():
 def add_follower(uuid):
     return account_handlers.add_follower(uuid)
 
+@app.route('/weibo/<uuid>/follower/<name>',methods=['DELETE'])
+def delete_follower(uuid,name):
+    return account_handlers.delete_follower(uuid,name)
+
 @app.route('/ping', methods=['PUT'])
 def ping():
     return _ping()

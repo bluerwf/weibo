@@ -74,3 +74,10 @@ def add_follower(uuid):
                        status=403,
                        content_type="application/json")
 
+def delete_follower(uuid, follower):
+    try:
+        acc.delete_follower(uuid,follower)
+        return Response(status = 204)
+    except InvalidUser as e:
+        return Response(json.dumps({'error':str(e)}),status = 404, content_type="application/json")
+
