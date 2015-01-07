@@ -127,15 +127,13 @@ class AccountDB(Database):
             q = '''
             SELECT follower FROM account WHERE uuid = ?
             '''
-            followers = self.read_db(q,(uuid,))[0]['follower']
+            followers = self.read_db(q, (uuid, ))[0]['follower']
             if followers:
                 follower = followers.split(', ').remove(follower)
                 sql = '''
                 UPDATE account SET follower=? WHERE uuid = ?
                 '''
-                new_follower = follower[0]
-                for i in follower[1:]:
-                    new_follower = new_follower + ', ' + i
-                self.write_db(sql, (followers, uuid))
+                follower = None if not follower else reduce(lambda f1, f2: f1 + ', ' + f2, follower)
+                self.write_db(sql, (follower, uuid))
         else:
             raise InvalidUser(follower)
