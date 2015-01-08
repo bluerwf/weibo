@@ -9,7 +9,8 @@ app = Flask(__name__)
 
 @app.route('/hello', methods=['GET'])
 def hello():
-    return _hello()
+    return {'hello': 'world'}
+    #return _hello()
 
 @app.route('/hello/<id>', methods=['GET'])
 def hello_id(id):
@@ -68,3 +69,4 @@ def _get_files():
 
 if __name__ == '__main__':
     app.run()
+

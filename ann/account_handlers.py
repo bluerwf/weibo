@@ -7,6 +7,22 @@ from db import AccountDB, UserAlreadyExists, DuplicateUserException
 DB = "/Users/lafengnan/codes/Github/weibo/weibo.db"
 acc = AccountDB(DB)
 
+def AuthToken(f):
+    def wrapper(uuid, *args, **kargs):
+        if 'X-Auth-Token'in request.headers:
+            token = request.headers['X-Auth-Token']
+            if token == acc.get_token(uuid)[0]['token']:
+                return f(uuid, *args, **kargs)
+            else:
+                return Response(json.dumps({'error':'Invalid Token'}),
+                           status = 401,
+                           content_type='application/json')
+        else:
+            return Response(json.dumps({"error": "missing token"}),
+                            status=400,
+                           content_type="application/json")
+    return wrapper
+
 def signup():
     if 'X-User' not in request.headers or \
        'X-Pass' not in request.headers:
@@ -19,7 +35,6 @@ def signup():
     try:
         acc.add_user(*user_and_pass)
         r = acc.get_user(user_and_pass[0])
-        print r[0]
         body = json.dumps({user_and_pass[0]:{'uuid': r[0]['uuid'],
                                              'name':r[0]['name'],
                                              'follower': r[0]['follower'],
@@ -41,6 +56,7 @@ def signin():
             token = md5(user_and_pass[0]).hexdigest()
             uuid = rc[0]['uuid']
             body ={'uuid':uuid,'token':token}
+            acc.add_token(uuid, token)
             return Response(json.dumps(body), status=200,content_type
                            ='application/json')
         else:
@@ -49,7 +65,7 @@ def signin():
     else:
         return Response(json.dumps({'error':'invalid user_name'}),
                        status = 404, content_type='application/json')
-
+@AuthToken
 def add_follower(uuid):
     data = json.loads(request.data)
     try:
@@ -72,6 +88,7 @@ def add_follower(uuid):
                        status=403,
                        content_type="application/json")
 
+@AuthToken
 def delete_follower(uuid, follower):
     try:
         acc.delete_follower(uuid,follower)

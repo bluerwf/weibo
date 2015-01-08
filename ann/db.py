@@ -57,7 +57,8 @@ class AccountDB(Database):
         name VARCHAR(20),
         passwd TEXT,
         follower  TEXT,
-        following   TEXT
+        following   TEXT,
+        token TEXT
         )
         '''
         self.write_db(sql)
@@ -82,10 +83,10 @@ class AccountDB(Database):
     def add_user(self, username, pw):
         if not self.is_user_existing(username):
             sql = '''
-            INSERT INTO account VALUES (?,?,?,?,?)
+            INSERT INTO account VALUES (?,?,?,?,?,?)
             '''
             uid = str(uuid.uuid4()) 
-            self.write_db(sql, (uid, username, pw, None, None))
+            self.write_db(sql, (uid, username, pw, None, None, None))
         else:
             raise UserAlreadyExists(username) 
 
@@ -137,3 +138,16 @@ class AccountDB(Database):
                 self.write_db(sql, (follower, uuid))
         else:
             raise InvalidUser(follower)
+    def add_token(self, uuid, token):
+         sql = '''
+         UPDATE account SET token = ? WHERE uuid = ?
+         
+         '''
+         self.write_db(sql,(token, uuid))
+    def get_token(self, uuid):
+        q = '''
+         SELECT token FROM account WHERE uuid = ?
+        '''
+        return self.read_db(q,(uuid, ))
+
+
