@@ -217,3 +217,88 @@ Contenty-Type        | application/json     | Required         |
 
 * Body  
 None
+
+###  Add a following
+
+#### Request
+
+* URI  
+
+
+URI                      | Method | Parameters|
+-------------------------| ------ | -----------
+/weibo/\<uuid\>/folloing | POST   | None      |
+
+* Headers  
+
+Name                | Value                | Required/Optioanl|
+--------------------|----------------------| ------------------
+Content-Type        | application/json     | Required         |  
+X-Auth-Token        | token                | Required         |   
+
+* Body  
+
+```
+{
+    "following": the following name to be added
+}
+```
+
+#### Response
+
+* status  
+  * 200 OK: Request is handled successfully
+  * 400 Bad Request: Request does not conform with restrictions
+  * 403 Forbidden: Authentication failed
+  * 404 Not Found: The user or follower is invalid
+  
+* Headers  
+
+Name                 | Value                | Required/Optioanl|
+---------------------|----------------------| ------------------
+Contenty-Type        | application/json     | Required         |  
+
+* Body  
+
+```
+{   
+    "name": user name, 
+    "follower": follower list of user,
+    "following": following list of user
+}
+```
+###  remove a following
+
+#### Request
+
+* URI  
+
+URI                               | Method   | Parameters|
+----------------------------------| -------- | -----------
+/weibo/\<uuid\>/following/\<name\> | DELETE   | None      |
+
+* Headers  
+
+Name                | Value                | Required/Optioanl|
+--------------------|----------------------| ------------------ 
+X-Auth-Token        | token                | Required         |
+   
+
+* Body  
+None
+
+#### Response
+
+* status  
+  * 204 OK: Request is handled successfully
+  * 400 Bad Request: Request does not conform with restrictions
+  * 403 Forbidden: Authentication failed
+  
+* Headers  
+
+Name                 | Value                | Required/Optioanl|
+---------------------|----------------------| ------------------
+Contenty-Type        | application/json     | Required         |  
+
+* Body  
+None
