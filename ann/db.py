@@ -80,6 +80,16 @@ class AccountDB(Database):
         else:
             return False
 
+    def is_following_existing(self, uuid, following):
+        query = '''
+        SELECT following FROM account WHERE uuid = ?
+        '''
+        r = self.read_db(query, (uuid, )) 
+        if r[0]['following'] and following in r[0][following].split(', '):
+            return True
+        else:
+            return False           
+
     def add_user(self, username, pw):
         if not self.is_user_existing(username):
             sql = '''
@@ -138,6 +148,7 @@ class AccountDB(Database):
                 self.write_db(sql, (follower, uuid))
         else:
             raise InvalidUser(follower)
+
     def add_token(self, uuid, token):
          sql = '''
          UPDATE account SET token = ? WHERE uuid = ?
@@ -149,5 +160,43 @@ class AccountDB(Database):
          SELECT token FROM account WHERE uuid = ?
         '''
         return self.read_db(q,(uuid, ))
+
+    def add_following(self, uuid, following):
+        if self.get_user_by_uuid(uuid)[0]['name'] == following or self.is_following_existing(uuid, following):
+            raise DuplicateUserException(following)
+        if self.get_user(following):
+            q = '''
+                       SELECT following FROM account WHERE uuid = ?
+             '''   
+            followings = self.read_db(q, (uuid, ))
+            if followings[0]['following']:
+                following = followings[0]['following'] + ', '+following
+                sql ='''
+                UPDATE account SET following = ? WHERE uuid = ?
+                '''
+                self.write_db(sql,(following, uuid)) 
+                query ='''
+                SELECT uuid, name, follower, following FROM account WHERE uuid = ?
+                '''
+                return self.read_db(query,(uuid, ))
+        else:
+            raise InvalidUser(following)         
+
+     def delete_following(self, uuid, following):
+        if self.get_user(following):
+            q = '''
+            SELECT following FROM account WHERE uuid = ?
+            '''
+            followings = self.read_db(q, (uuid, ))[0]['following']
+            if followings:
+                following = followings.split(', ').remove(following)
+                sql = '''
+                UPDATE account SET follower=? WHERE uuid = ?
+                '''
+                following = None if not following else reduce(lambda f1, f2: f1 + ', ' + f2, following)
+                self.write_db(sql, (following, uuid))
+        else:
+            raise InvalidUser(following)
+
 
 

@@ -96,3 +96,34 @@ def delete_follower(uuid, follower):
     except InvalidUser as e:
         return Response(json.dumps({'error':str(e)}),status = 404, content_type="application/json")
 
+@AuthToken
+def add_following(uuid):
+    data = json.loads(request.data)
+    try:
+        r = acc.add_following(uuid,data['following'])
+        body ={'uuid':r[0]['uuid'],
+               'name':r[0]['name'],
+               'follower':r[0]['follower'],
+               'following':r[0]['following'].split(", ")  
+        }
+        return Response(json.dumps(body),status = 200, content_type ='application/json')
+    except InvalidUser as e:
+        print str(e)
+        return Response(json.dumps({'error':str(e)}),
+                        status = 404,
+                        content_type = 'application/json')    
+    except DuplicateUserException as e:
+        print str(e)
+        return Response(json.dumps({'error':str(e)}),
+                        status = 403,
+                        content_type = 'application/json')
+
+@AuthToken
+def detele_following(uuid, following):
+    try:
+        acc.delete_following(uuid, following):
+        return Response(status=204)
+    except InvalidUser as e:
+        return Reponse(json.dumps({'error':str(e)}),
+            status=404,
+            content_type='/application/json')                                
