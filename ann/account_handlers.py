@@ -1,8 +1,9 @@
 import json
 from flask import request, Response
 from hashlib import md5
-from weibo_exception import InvalidUser
+from weibo_exception import InvalidUser, Invaliduuid
 from db import AccountDB, UserAlreadyExists, DuplicateUserException
+from utility import convert_str_to_list
 
 DB = "/Users/lafengnan/codes/Github/weibo/weibo.db"
 acc = AccountDB(DB)
@@ -121,9 +122,52 @@ def add_following(uuid):
 @AuthToken
 def detele_following(uuid, following):
     try:
-        acc.delete_following(uuid, following):
+        acc.delete_following(uuid, following)
         return Response(status=204)
     except InvalidUser as e:
-        return Reponse(json.dumps({'error':str(e)}),
+        return Response(json.dumps({'error':str(e)}),
             status=404,
-            content_type='/application/json')                                
+            content_type='/application/json')
+
+def get_user_info(uuid):
+    r = acc.get_user_info(uuid)
+    if r:
+        follower = r[0]['follower']
+        following = r[0]['following']
+
+        print "debug: {}".format(following)
+
+        body = {'uuid':r[0]['uuid'],
+                'name':r[0]['name'],
+                'follower':convert_str_to_list(follower, ', '),
+                'following':convert_str_to_list(following, ', ')
+               }
+        return Response(json.dumps(body),status =200,content_type
+                   ='application/json')
+    else:
+        return Response(json.dumps({'error':'Invalid uuid{%s}'%uuid}),
+                       status=404,
+                       content_type='application/json')
+
+def get_user_list():
+    users={}
+    """
+    {
+    'uuid': {
+    'name': 'ann',
+    'follower': ["chris"]
+    'following': []
+    }
+    }"""
+    uuids = acc.get_all_uuid()
+    for r in uuids:
+        uuid = r['uuid']
+        user = acc.get_user_info(uuid)[0]
+        users[uuid] = {"name": user['name'],
+                       "follower": convert_str_to_list(user['follower'], ', '),
+                       "following": convert_str_to_list(user['following'], ', ')
+                      }
+
+    return Response(json.dumps(users),
+                   status=200,
+                   content_type="application/json")

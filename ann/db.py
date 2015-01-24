@@ -1,6 +1,6 @@
 import sqlite3
 import uuid
-from weibo_exception import InvalidUser, UserAlreadyExists, DuplicateUserException
+from weibo_exception import InvalidUser, Invaliduuid, UserAlreadyExists, DuplicateUserException
 
 
 def debug(f):
@@ -106,6 +106,18 @@ class AccountDB(Database):
         '''
         return self.read_db(query, (user, ))
 
+    def get_all_uuid(self):
+        query='''
+        SELECT uuid FROM account 
+        '''
+        return self.read_db(query)
+    
+    def get_user_info(self,uuid):
+        query = '''
+        SELECT name, uuid, follower, following FROM account WHERE uuid = ?
+        '''
+        return self.read_db(query,(uuid,))
+
     def get_user_by_uuid(self, uuid):
         query = '''
         SELECT name FROM account WHERE uuid = ?
@@ -142,6 +154,7 @@ class AccountDB(Database):
             if followers:
                 follower = followers.split(', ').remove(follower)
                 sql = '''
+                
                 UPDATE account SET follower=? WHERE uuid = ?
                 '''
                 follower = None if not follower else reduce(lambda f1, f2: f1 + ', ' + f2, follower)
@@ -182,7 +195,7 @@ class AccountDB(Database):
         else:
             raise InvalidUser(following)         
 
-     def delete_following(self, uuid, following):
+    def delete_following(self, uuid, following):
         if self.get_user(following):
             q = '''
             SELECT following FROM account WHERE uuid = ?
@@ -197,6 +210,3 @@ class AccountDB(Database):
                 self.write_db(sql, (following, uuid))
         else:
             raise InvalidUser(following)
-
-
-

@@ -42,9 +42,17 @@ def delete_follower(uuid,name):
 def add_following(uuid):
     return account_handlers.add_following(uuid)
 
-@app.route('/weibo/<uuid>/following/<name>',method=['DELETE'])
+@app.route('/weibo/<uuid>/following/<name>',methods=['DELETE'])
 def delete_following(uuid, name):
-    return account_handlers.delete_following(uuid, name)    
+    return account_handlers.delete_following(uuid, name)
+
+@app.route('/weibo/user/<uuid>/info',methods=['GET'])
+def get_user_info(uuid):
+    return account_handlers.get_user_info(uuid)
+
+@app.route('/weibo/users',methods=['GET'])
+def get_user_list():
+    return account_handlers.get_user_list()
 
 @app.route('/ping', methods=['PUT'])
 def ping():
