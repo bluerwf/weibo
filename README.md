@@ -133,6 +133,92 @@ Contenty-Type        | application/json     | Required         |
 }
 ```
 
+### Get User info
+
+#### Request
+
+* URI  
+
+URI                        | Method | Parameters|
+---------------------------| ------ | -----------
+/weibo/user/\<uuid\>/info  | GET    | None      |
+
+* Headers  
+
+None
+
+* body  
+None
+
+#### Response
+
+* status  
+  * 200 OK: Request is handled successfully
+  * 404 Not Found: The user is invalid
+  
+* Headers  
+
+Name                 | Value                | Required/Optioanl|
+---------------------|----------------------| ------------------
+Contenty-Type        | application/json     | Required         |  
+
+* Body  
+
+```
+{   
+    "uuid": uuid string, 
+    "name": user name,
+    "follower": ["follower1", "follower2"...],
+    "following": ["following1", "following2"...],
+}
+```
+### Get User List
+
+#### Request
+
+* URI  
+
+URI                      | Method | Parameters|
+-------------------------| ------ | -----------
+/weibo/users             | GET    | None      |
+
+* Headers  
+
+None
+
+* body  
+None
+
+#### Response
+
+* status  
+  * 200 OK: Request is handled successfully
+  
+* Headers  
+
+Name                 | Value                | Required/Optioanl|
+---------------------|----------------------| ------------------
+Contenty-Type        | application/json     | Required         |  
+
+* Body  
+
+```
+{   
+    "uuid1": {
+                  "name": user name,
+                  "follower": followers,
+                  "following": followings
+             },
+    "uuid2": {
+                  "name": user name,
+                  "follower": followers,
+                  "following": followings
+             },
+    ...
+}
+```
+
+
 ###  add follower
 
 #### Request
