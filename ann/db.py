@@ -210,3 +210,14 @@ class AccountDB(Database):
                 self.write_db(sql, (following, uuid))
         else:
             raise InvalidUser(following)
+
+    def delete_account(self, uuid):
+        if self.get_user_by_uuid(uuid):
+            query='''
+            DELETE FROM account WHERE uuid = ?
+            '''
+            self.write_db(query,(uuid, ))
+        else:
+            raise Invaliduuid
+
+

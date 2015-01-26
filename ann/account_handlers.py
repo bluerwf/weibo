@@ -127,6 +127,16 @@ def delete_following(uuid, following):
             status=404,
             content_type='/application/json')
 
+@AuthToken
+def delete_account(uuid):
+    try:
+        acc.delete_account(uuid)
+        return Response(status=204)
+    except Invaliduuid as e:
+        return Response(json.dumps({'error':str(e)}),
+                       status=404,
+                       content_type='/application/json')
+
 def get_user_info(uuid):
     r = acc.get_user_info(uuid)
     if r:

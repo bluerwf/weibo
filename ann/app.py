@@ -30,6 +30,10 @@ def signup():
 def signin():
     return account_handlers.signin()
 
+@app.route('/weibo/user/<uuid>',methods=['DELETE'])
+def delete_account(uuid):
+    return account_handlers.delete_account(uuid)
+
 @app.route('/weibo/<uuid>/follower',methods=['POST'])
 def add_follower(uuid):
     return account_handlers.add_follower(uuid)
@@ -45,7 +49,6 @@ def add_following(uuid):
 @app.route('/weibo/<uuid>/following/<name>',methods=['DELETE'])
 def delete_following(uuid, name):
     return account_handlers.delete_following(uuid, name)
-    
 
 @app.route('/weibo/user/<uuid>/info',methods=['GET'])
 def get_user_info(uuid):
