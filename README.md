@@ -133,6 +133,42 @@ Contenty-Type        | application/json     | Required         |
 }
 ```
 
+### Delete an account
+
+#### Request
+
+* URI  
+
+URI                  | Method | Parameters|
+---------------------| ------ | -----------
+/weibo/user/\<uuid\> | DELETE | None      |
+
+* Headers  
+
+Name          | Value    | Required/Optioanl|
+--------------|----------| ------------------
+X-Auth-Token  | token    | Required         |  
+
+
+* body  
+None(*Will Change*)
+
+#### Response
+
+* status  
+  * 204 No Content: Request is handled successfully
+  * 400 Bad Request: Request does not conform with restrictions
+  * 403 Forbidden: Can not delete 
+  * 404 Not Found: the uuid does not exist
+  
+* Headers  
+
+None
+
+* Body  
+
+None
+
 ### Get User info
 
 #### Request
