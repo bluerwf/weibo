@@ -73,8 +73,8 @@ def add_follower(uuid):
         r = acc.add_follower(uuid, data['follower'])
         body = {'uuid':r[0]['uuid'],
                 'name': r[0]['name'],
-                'follower': r[0]['follower'].split(", "),
-                'following': r[0]['following']
+                'follower': convert_str_to_list(r[0]['follower'],', '),
+                'following': convert_str_to_list(r[0]['following'],', ')
                }
         print body
         return Response(json.dumps(body), status = 200, content_type ='application/json')
@@ -104,23 +104,21 @@ def add_following(uuid):
         r = acc.add_following(uuid,data['following'])
         body ={'uuid':r[0]['uuid'],
                'name':r[0]['name'],
-               'follower':r[0]['follower'],
-               'following':r[0]['following'].split(", ")  
+               'follower':convert_str_to_list(r[0]['follower'],', '),
+               'following':convert_str_to_list(r[0]['following'],', ')  
         }
         return Response(json.dumps(body),status = 200, content_type ='application/json')
     except InvalidUser as e:
-        print str(e)
         return Response(json.dumps({'error':str(e)}),
                         status = 404,
                         content_type = 'application/json')    
     except DuplicateUserException as e:
-        print str(e)
         return Response(json.dumps({'error':str(e)}),
                         status = 403,
                         content_type = 'application/json')
 
 @AuthToken
-def detele_following(uuid, following):
+def delete_following(uuid, following):
     try:
         acc.delete_following(uuid, following)
         return Response(status=204)

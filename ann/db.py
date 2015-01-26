@@ -85,7 +85,7 @@ class AccountDB(Database):
         SELECT following FROM account WHERE uuid = ?
         '''
         r = self.read_db(query, (uuid, )) 
-        if r[0]['following'] and following in r[0][following].split(', '):
+        if r[0]['following'] and following in r[0]['following'].split(', '):
             return True
         else:
             return False           
@@ -184,14 +184,14 @@ class AccountDB(Database):
             followings = self.read_db(q, (uuid, ))
             if followings[0]['following']:
                 following = followings[0]['following'] + ', '+following
-                sql ='''
+            sql ='''
                 UPDATE account SET following = ? WHERE uuid = ?
                 '''
-                self.write_db(sql,(following, uuid)) 
-                query ='''
+            self.write_db(sql,(following, uuid)) 
+            query ='''
                 SELECT uuid, name, follower, following FROM account WHERE uuid = ?
                 '''
-                return self.read_db(query,(uuid, ))
+            return self.read_db(query,(uuid, ))
         else:
             raise InvalidUser(following)         
 
@@ -204,7 +204,7 @@ class AccountDB(Database):
             if followings:
                 following = followings.split(', ').remove(following)
                 sql = '''
-                UPDATE account SET follower=? WHERE uuid = ?
+                UPDATE account SET following=? WHERE uuid = ?
                 '''
                 following = None if not following else reduce(lambda f1, f2: f1 + ', ' + f2, following)
                 self.write_db(sql, (following, uuid))
