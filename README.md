@@ -21,9 +21,12 @@ This code has passed test on OS X with Python 2.7.6. Consequently it should conf
 2. Install Flask framework(sudo pip install -U flask).
 3. Install sqlite3 library(On ubuntu: sudo apt-get install libsqlite3-dev).
 4. Clone source code to local system.
+5. Defualt settings are in settings.py, if you need add specific settings please update settings_local.py.
+6. running bootstrap to initialize the python env.
 
 ### Run
 1. Execute bin/init\_db.py to initialize data base.
+2. . activate-weibo to activate virtualenv of project.
 2. python ann/app.py to run flask embedded web server.
 3. Send request with curl or other http clients.
 
