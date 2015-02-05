@@ -4,6 +4,7 @@
 from flask import Flask, Response, request
 import json
 import account_handlers
+import message_handlers
 from wsgi import Weibo
 
 app = Weibo(__name__)
@@ -58,6 +59,10 @@ def get_user_info(uuid):
 @app.route('/weibo/users',methods=['GET'])
 def get_user_list():
     return account_handlers.get_user_list()
+
+@app.route('/weibo/timeline/<uuid>',methods=['PUT'])
+def send_message(uuid):
+    return message_handlers.send_message(uuid)
 
 @app.route('/ping', methods=['PUT'])
 def ping():
