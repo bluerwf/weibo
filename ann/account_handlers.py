@@ -2,18 +2,15 @@ import json
 from flask import request, Response
 from hashlib import md5
 from weibo_exception import InvalidUser, Invaliduuid
-from db import AccountDB, UserAlreadyExists, DuplicateUserException
+from db import UserAlreadyExists, DuplicateUserException
 from utility import convert_str_to_list
 import ann
-
-DB = "/var/weibo/weibo.db"
-acc = AccountDB(ann.app.config.get('DB', DB))
 
 def AuthToken(f):
     def wrapper(uuid, *args, **kargs):
         if 'X-Auth-Token'in request.headers:
             token = request.headers['X-Auth-Token']
-            if token == acc.get_token(uuid)[0]['token']:
+            if token == ann.app.acc.get_token(uuid)[0]['token']:
                 return f(uuid, *args, **kargs)
             else:
                 return Response(json.dumps({'error':'Invalid Token'}),
@@ -35,8 +32,8 @@ def signup():
     user_and_pass = [request.headers.get(h) for h in ["X-User", "X-Pass"]]
     body = None
     try:
-        acc.add_user(*user_and_pass)
-        r = acc.get_user(user_and_pass[0])
+        ann.app.acc.add_user(*user_and_pass)
+        r = ann.app.acc.get_user(user_and_pass[0])
         body = json.dumps({user_and_pass[0]:{'uuid': r[0]['uuid'],
                                              'name':r[0]['name'],
                                              'follower': r[0]['follower'],
@@ -52,13 +49,13 @@ def signin():
                         status=400,content_type='application/json')
     user_and_pass = [request.headers.get(h) for h in ['X-User','X-Pass']]
     body = None
-    rc = acc.get_user(user_and_pass[0])
+    rc = ann.app.acc.get_user(user_and_pass[0])
     if rc:
         if rc[0]['passwd'] == user_and_pass[1]:
             token = md5(user_and_pass[0]).hexdigest()
             uuid = rc[0]['uuid']
             body ={'uuid':uuid,'token':token}
-            acc.add_token(uuid, token)
+            ann.app.acc.add_token(uuid, token)
             return Response(json.dumps(body), status=200,content_type
                            ='application/json')
         else:
@@ -71,7 +68,7 @@ def signin():
 def add_follower(uuid):
     data = json.loads(request.data)
     try:
-        r = acc.add_follower(uuid, data['follower'])
+        r = ann.app.acc.add_follower(uuid, data['follower'])
         body = {'uuid':r[0]['uuid'],
                 'name': r[0]['name'],
                 'follower': convert_str_to_list(r[0]['follower'],', '),
@@ -93,7 +90,7 @@ def add_follower(uuid):
 @AuthToken
 def delete_follower(uuid, follower):
     try:
-        acc.delete_follower(uuid,follower)
+        ann.app.acc.delete_follower(uuid,follower)
         return Response(status = 204)
     except InvalidUser as e:
         return Response(json.dumps({'error':str(e)}),status = 404, content_type="application/json")
@@ -102,7 +99,7 @@ def delete_follower(uuid, follower):
 def add_following(uuid):
     data = json.loads(request.data)
     try:
-        r = acc.add_following(uuid,data['following'])
+        r = ann.app.acc.add_following(uuid,data['following'])
         body ={'uuid':r[0]['uuid'],
                'name':r[0]['name'],
                'follower':convert_str_to_list(r[0]['follower'],', '),
@@ -121,7 +118,7 @@ def add_following(uuid):
 @AuthToken
 def delete_following(uuid, following):
     try:
-        acc.delete_following(uuid, following)
+        ann.app.acc.delete_following(uuid, following)
         return Response(status=204)
     except InvalidUser as e:
         return Response(json.dumps({'error':str(e)}),
@@ -131,7 +128,7 @@ def delete_following(uuid, following):
 @AuthToken
 def delete_account(uuid):
     try:
-        acc.delete_account(uuid)
+        ann.app.acc.delete_account(uuid)
         return Response(status=204)
     except Invaliduuid as e:
         return Response(json.dumps({'error':str(e)}),
@@ -139,7 +136,7 @@ def delete_account(uuid):
                        content_type='/application/json')
 
 def get_user_info(uuid):
-    r = acc.get_user_info(uuid)
+    r = ann.app.acc.get_user_info(uuid)
     if r:
         follower = r[0]['follower']
         following = r[0]['following']
@@ -168,10 +165,10 @@ def get_user_list():
     'following': []
     }
     }"""
-    uuids = acc.get_all_uuid()
+    uuids = ann.app.acc.get_all_uuid()
     for r in uuids:
         uuid = r['uuid']
-        user = acc.get_user_info(uuid)[0]
+        user = ann.app.acc.get_user_info(uuid)[0]
         users[uuid] = {"name": user['name'],
                        "follower": convert_str_to_list(user['follower'], ', '),
                        "following": convert_str_to_list(user['following'], ', ')

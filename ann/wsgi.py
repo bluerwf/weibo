@@ -1,5 +1,6 @@
 import settings
 from flask import Flask, jsonify, Request
+from db import AccountDB
 
 # overriding the default settings
 try:
@@ -19,6 +20,7 @@ class Weibo(Flask):
     def __init__(self, *args, **kwargs):
         super(Weibo, self).__init__(*args, **kwargs)
         self._configure()
+        self._config_db()
 
     def _configure(self):
         # default
@@ -26,3 +28,7 @@ class Weibo(Flask):
         # local settings
         if OVERRIDES:
             self.config.from_object(OVERRIDES)
+
+    def _config_db(self):
+        _DB = "/var/weibo/weibo.db"
+        self.acc = AccountDB(self.config.get('DB', _DB)) 
