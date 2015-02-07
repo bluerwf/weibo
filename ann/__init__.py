@@ -93,7 +93,3 @@ def _get_files():
                        status=200,
                        content_type="application/json")
     return response
-
-if __name__ == '__main__':
-    app.run()
-
