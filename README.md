@@ -47,7 +47,7 @@ curl -X POST -H "Content-Type: application/json" http://127.0.0.1:5000/weibo/fol
 }' -vv
 
 
-## REST APIs
+## Account APIs
 
 ### signup
 
@@ -427,3 +427,55 @@ Contenty-Type        | application/json     | Required         |
 
 * Body  
 None
+
+## Timeline APIs
+
+### Post a new message
+#### Request
+
+* URI  
+
+URI                               | Method   | Parameters|
+----------------------------------| -------- | -----------
+/weibo/timeline\<uuid\>           | PUT      | None      |
+
+* Headers  
+
+Name                | Value                | Required/Optioanl|
+--------------------|----------------------| ------------------ 
+X-Auth-Token        | token                | Required         |
+Content-Type        | application/json     | Required         |
+   
+
+* Body  
+```
+{
+    "uuid": uuid,
+    "msg": string (Length <= 140 characters),
+    "tags": []
+}
+```
+
+#### Response
+
+* status  
+  * 200 OK: Request is handled successfully
+  * 400 Bad Request: Request does not conform with restrictions
+  * 401 Unauthorize: The uuid is not authorized
+  * 403 Forbidden: Authentication failed
+  
+* Headers  
+
+Name                 | Value                | Required/Optioanl|
+---------------------|----------------------| ------------------
+Contenty-Type        | application/json     | Required         |  
+
+* Body  
+```
+{
+    "uuid": uuid,
+    "msg_id": uuid,
+    "msg": string(Length <= 140 characters),
+    "tags": []
+}
+```
