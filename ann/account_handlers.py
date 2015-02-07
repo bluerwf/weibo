@@ -4,10 +4,10 @@ from hashlib import md5
 from weibo_exception import InvalidUser, Invaliduuid
 from db import AccountDB, UserAlreadyExists, DuplicateUserException
 from utility import convert_str_to_list
-from app import app
+import ann
 
 DB = "/var/weibo/weibo.db"
-acc = AccountDB(app.config.get('DB', DB))
+acc = AccountDB(ann.app.config.get('DB', DB))
 
 def AuthToken(f):
     def wrapper(uuid, *args, **kargs):
@@ -44,7 +44,7 @@ def signup():
     except UserAlreadyExists as e:
         body = json.dumps({"error": str(e)})
     return Response(body, status=200, content_type='application/json')
-   
+
 def signin():
     if 'X-User' not in request.headers or \
        'X-Pass' not in request.headers:
@@ -106,13 +106,13 @@ def add_following(uuid):
         body ={'uuid':r[0]['uuid'],
                'name':r[0]['name'],
                'follower':convert_str_to_list(r[0]['follower'],', '),
-               'following':convert_str_to_list(r[0]['following'],', ')  
+               'following':convert_str_to_list(r[0]['following'],', ')
         }
         return Response(json.dumps(body),status = 200, content_type ='application/json')
     except InvalidUser as e:
         return Response(json.dumps({'error':str(e)}),
                         status = 404,
-                        content_type = 'application/json')    
+                        content_type = 'application/json')
     except DuplicateUserException as e:
         return Response(json.dumps({'error':str(e)}),
                         status = 403,

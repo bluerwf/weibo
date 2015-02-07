@@ -10,4 +10,5 @@
 # they always retrieve the current version.
 
 Flask==0.9
+flask-script==2.0.5
 iso8601==0.1.10

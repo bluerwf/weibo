@@ -15,11 +15,11 @@ class Weibo(Flask):
         - Enables authentication middleware
         - Returns all exceptions as JSON documents
     """
-    
+
     def __init__(self, *args, **kwargs):
         super(Weibo, self).__init__(*args, **kwargs)
         self._configure()
-    
+
     def _configure(self):
         # default
         self.config.from_object(settings)
