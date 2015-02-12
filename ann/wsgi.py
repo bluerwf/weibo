@@ -1,6 +1,6 @@
 import settings
-from flask import Flask, jsonify, Request
-from db import AccountDB
+from flask import Flask
+from db import AccountDB, MessageDB
 
 # overriding the default settings
 try:
@@ -31,4 +31,5 @@ class Weibo(Flask):
 
     def _config_db(self):
         _DB = "/var/weibo/weibo.db"
-        self.acc = AccountDB(self.config.get('DB', _DB)) 
+        self.acc = AccountDB(self.config.get('DB', _DB))
+        self.msg = MessageDB(self.config.get('DB', _DB))

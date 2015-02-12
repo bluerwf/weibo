@@ -220,4 +220,19 @@ class AccountDB(Database):
         else:
             raise Invaliduuid
 
+class MessageDB(Database):
+    def create_table(self):
+        sql ='''
+        CREATE TABLE message(
+        msg_id  TEXT PRIMARY KEY,
+        msg TEXT,
+        tag TEXT,
+        ts TEXT,
+        uuid TEXT,
+        FOREIGN KEY(uuid) REFERENCES account(uuid)
+        )
+        '''
+        self.write_db(sql)
+
+
 
