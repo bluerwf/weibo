@@ -1,6 +1,9 @@
 import json
+import ann
+from time import time
 from flask import request, Response
 import account_handlers
+import utility
 #from account_handlers import AuthToken
 MAX_MSG_LEN = 140
 
@@ -19,13 +22,11 @@ def send_message(uuid):
                        status=403, content_type='application/json')
     else:
         body = data
-        body['msg_id'] = read_db()
+        tag = utility.convert_list_to_str(data['tag'], ', ')
+        body['msg_id'] = ann.app.msg.add_message(str(data['message']), tag, time(), uuid)
         return Response(json.dumps(body), status=200,
                        content_type='application/json')
 
-def read_db():
-    "test hello world" > 140
-    return 123456
 
 
 

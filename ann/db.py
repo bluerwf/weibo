@@ -1,5 +1,6 @@
 import sqlite3
 import uuid
+from uuid import uuid4
 from weibo_exception import InvalidUser, Invaliduuid, UserAlreadyExists, DuplicateUserException
 
 
@@ -233,6 +234,17 @@ class MessageDB(Database):
         )
         '''
         self.write_db(sql)
+
+    def add_message(self, msg, tag, ts, uuid):
+
+        sql='''
+        INSERT INTO message VALUES (?,?,?,?,?)
+        '''
+        msg_id = str(uuid4())
+        self.write_db(sql,(msg_id, msg, tag, ts, uuid))
+        return msg_id
+
+
 
 
 
