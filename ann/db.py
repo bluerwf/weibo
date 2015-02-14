@@ -242,7 +242,7 @@ class MessageDB(Database):
         '''
         msg_id = str(uuid4())
         self.write_db(sql,(msg_id, msg, tag, ts, uuid))
-        return msg_id
+        return msg_id, ts
 
 
 

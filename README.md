@@ -437,7 +437,7 @@ None
 
 URI                               | Method   | Parameters|
 ----------------------------------| -------- | -----------
-/weibo/timeline\<uuid\>           | PUT      | None      |
+/weibo/timeline/\<uuid\>          | PUT      | None      |
 
 * Headers  
 
@@ -476,6 +476,7 @@ Contenty-Type        | application/json     | Required         |
     "uuid": uuid,
     "msg_id": uuid,
     "msg": string(Length <= 140 characters),
+    "ts": timestamp
     "tags": []
 }
 ```

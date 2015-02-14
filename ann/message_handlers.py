@@ -23,7 +23,7 @@ def send_message(uuid):
     else:
         body = data
         tag = utility.convert_list_to_str(data['tag'], ', ')
-        body['msg_id'] = ann.app.msg.add_message(str(data['message']), tag, time(), uuid)
+        body['msg_id'], body['ts'] = ann.app.msg.add_message(data['message'], tag, time(), uuid)
         return Response(json.dumps(body), status=200,
                        content_type='application/json')
 
